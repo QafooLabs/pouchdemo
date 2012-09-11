@@ -1,0 +1,28 @@
+<div>
+    <h1>Synchronized Databases</h1>
+    <div class="alert alert-info" ng-hide="knownDbs">
+        <strong>No</strong> database replications have been defined yet. Please
+        fill out the <strong>form below</strong> to add one.
+    </div>
+    <dl ng-repeat="db in knownDbs">
+        <dt><a href="#/db{{db.name}}">{{db.name}}</a></dt>
+        <dd>
+            <div>
+                Remote database: <strong>{{db.source}}</strong>
+            </div>
+            <div>
+                Last synced: <strong>{{db.lastSynced}}</strong>
+            </div>
+        </dd>
+    </dl>
+    <h1>Add synchronization</h1>
+    <form ng-submit="addReplication(replicationDb)">
+        <legend>Replication details</legend>
+        <div class="alert alert-{{replicationStatusType}}" ng-show="replicationStatusMessage">
+            {{replicationStatusMessage}}
+        </div>
+        <div class="input-append control-group" ng-class="{error: replicationStatusType == 'error'}">
+            <input class="span4" type="text" ng-model="replicationDb" placeholder="http://localhost:5984/my_db_name" /><button class="btn" type="submit">Add</button>
+        </div>
+    </form>
+</div>

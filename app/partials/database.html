@@ -1,0 +1,12 @@
+<div>
+    <h1>Database: {{database}}</h1>
+    <div class="alert alert-error" ng-hide="dbmeta">
+        <strong>No</strong> information about the provided database could be found. Please add a <a href="#/all_dbs">replication</a> for it first.
+    </div>
+    <dl ng-repeat="doc in documents">
+        <dt style="margin-bottom: 10px;"><span class="label label-warning">Id</span>&nbsp;{{doc.id}}</a></dt>
+        <dd>
+            <pre class="prettyprint linenums pre-scrollable language-js">{{doc.value}}</pre>
+        </dd>
+    </dl>
+</div>

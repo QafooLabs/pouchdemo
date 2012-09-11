@@ -1,0 +1,1 @@
+angular.module('pouchdemo.controllers', []);
