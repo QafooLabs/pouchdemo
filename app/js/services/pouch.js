@@ -2,27 +2,21 @@ angular.module('pouchdemo.services')
 .factory('pouch', [
     '$rootScope', '$q',
     function($scope, $q) {
-        var rootDb = null;
         var pouch = {};
 
         pouch.openMetadataDb = function() {
             var deferred = $q.defer();
-            if (rootDb !== null) {
-                deferred.resolve(rootDb);
-                return deferred.promise;
-            } else {
-                Pouch("idb://pouchdemo_metadata", function(err, db) {
-                    if (err) {
-                        $scope.$apply(function() {
-                            return deferred.reject(err.reason);
-                        });
-                    }
-                    rootDb = db;
+            Pouch("idb://pouchdemo_metadata", function(err, db) {
+                if (err) {
                     $scope.$apply(function() {
-                        return deferred.resolve(db);
+                        return deferred.reject(err.reason);
                     });
+                }
+                $scope.$apply(function() {
+                    console.log("opened metadata");
+                    return deferred.resolve(db);
                 });
-            }
+            });
             return deferred.promise;
         };
 
@@ -30,11 +24,16 @@ angular.module('pouchdemo.services')
             var deferred = $q.defer();
             db.get("knownDbs", {}, function(err, doc) { 
                 if (err) {
+                    doc = {
+                        _id: "knownDbs",
+                        knownDbs: {}
+                    };
                     $scope.$apply(function() {
-                        return deferred.reject(err.reason);
+                        return deferred.resolve(doc);
                     });
                 }
                 $scope.$apply(function() {
+                    console.log("retrieved document");
                     return deferred.resolve(doc);
                 });
             });
@@ -51,6 +50,7 @@ angular.module('pouchdemo.services')
                         });
                     }
                     $scope.$apply(function() {
+                        console.log("updated knownDbs")
                         return deferred.resolve(doc.knownDbs);
                     });
                 });
@@ -76,12 +76,14 @@ angular.module('pouchdemo.services')
                 "idb://" + dbmeta.name, 
                 {}, 
                 function(err, changes) {
+                    console.log(err,changes);
                     if (err) {
                         $scope.$apply(function() {
                             deferred.reject(err.reason);
                         });
                     }
                     $scope.$apply(function() {
+                        console.log("replicated " + dbmeta.source)
                         deferred.resolve(changes);
                     });
                 }
@@ -90,17 +92,16 @@ angular.module('pouchdemo.services')
         };
 
         pouch.addReplicatedDb = function(dbmeta) {
-            var knownDbs = pouch.getKnownDbs();
-            var knownDbsDoc = pouch.openMetadataDb().then(function(db) {
+            var knownDBsDoc = null;
+            return pouch.openMetadataDb().then(function(db){
                 return pouch.getKnownDbsDocument(db);
-            });
-
-            return knownDbsDoc.then(function(doc){
-                return knownDbs.then(function(knownDbs){
-                    knownDbs[dbmeta.name] = dbmeta;
-                    doc.knownDbs = knownDbs;
-                    return pouch.updateKnownDbsDocument(doc);
-                });
+            }).then(function(doc){
+                knownDBsDoc = angular.copy(doc);
+                return pouch.getKnownDbs();
+            }).then(function(knownDbs) {
+                knownDbs[dbmeta.name] = dbmeta;
+                knownDBsDoc.knownDbs = knownDbs;
+                return pouch.updateKnownDbsDocument(knownDBsDoc);
             });
         };
 
