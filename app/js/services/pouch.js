@@ -12,13 +12,15 @@ angular.module('pouchdemo.services')
                 return deferred.promise;
             } else {
                 Pouch("idb://pouchdemo_metadata", function(err, db) {
-                     $scope.$apply(function() {
-                         if (err) {
-                             return deferred.reject(err.reason);
-                         }
-                         //rootDb = db;
-                         return deferred.resolve(db);
-                     });
+                    if (err) {
+                        $scope.$apply(function() {
+                            return deferred.reject(err.reason);
+                        });
+                    }
+                    rootDb = db;
+                    $scope.$apply(function() {
+                        return deferred.resolve(db);
+                    });
                 });
             }
             return deferred.promise;
@@ -27,10 +29,12 @@ angular.module('pouchdemo.services')
         pouch.getKnownDbsDocument = function(db) {
             var deferred = $q.defer();
             db.get("knownDbs", {}, function(err, doc) { 
-                $scope.$apply(function(){
-                    if (err) {
+                if (err) {
+                    $scope.$apply(function() {
                         return deferred.reject(err.reason);
-                    }
+                    });
+                }
+                $scope.$apply(function() {
                     return deferred.resolve(doc);
                 });
             });
@@ -41,10 +45,12 @@ angular.module('pouchdemo.services')
             return pouch.openMetadataDb().then(function(db) {
                 var deferred = $q.defer();
                 db.put(doc, {}, function(err, response) {
-                    $scope.$apply(function() {
-                        if (err) {
+                    if (err) {
+                        $scope.$apply(function() {
                             return deferred.reject(err.reason);
-                        }
+                        });
+                    }
+                    $scope.$apply(function() {
                         return deferred.resolve(doc.knownDbs);
                     });
                 });
@@ -70,10 +76,12 @@ angular.module('pouchdemo.services')
                 "idb://" + dbmeta.name, 
                 {}, 
                 function(err, changes) {
-                    $scope.$apply(function(){
-                        if (err) {
+                    if (err) {
+                        $scope.$apply(function() {
                             deferred.reject(err.reason);
-                        }
+                        });
+                    }
+                    $scope.$apply(function() {
                         deferred.resolve(changes);
                     });
                 }
