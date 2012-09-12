@@ -16,7 +16,7 @@ angular.module('pouchdemo.controllers')
             });
         });
 
-        Pouch("idb://" + $routeParams.database, function(err, db) {
+        Pouch("idb:///" + $routeParams.database, function(err, db) {
             if ( err ) {
                 return;
             }
