@@ -1,7 +1,7 @@
 'use strict';
 
 // Main Application module
-angular.module('pouchdemo', ['pouchdemo.controllers', 'pouchdemo.filters'])
+angular.module('pouchdemo', ['pouchdemo.services', 'pouchdemo.controllers', 'pouchdemo.filters'])
 .config([
     '$routeProvider',
     /**
